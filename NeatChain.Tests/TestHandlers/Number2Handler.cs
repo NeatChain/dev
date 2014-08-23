@@ -5,15 +5,14 @@ namespace NeatChain.Tests.TestHandlers
 {
     public class Number2Handler : AChainMemberThatCanHandleArgumentType<int>
     {
-
         protected override bool ExecutionCondition(List<int> arg)
         {
-            return (arg.ToList().FirstOrDefault() == 2);
+            return (arg.First() == 2);
         }
 
-        protected override List<dynamic> Execute( List<int> arg)
+        protected override List<dynamic> Execute(List<int> arg)
         {
-            return new List<dynamic> {arg.ToList().First()*100};
+            return new List<dynamic> { arg.First() * 100 };
         }
     }
 }
