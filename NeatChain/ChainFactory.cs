@@ -48,13 +48,13 @@ namespace NeatChain
             params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
         {
             
-            return TheseHandlers(ExecutionStrategy.OnlyFirstMatchingHandlerIsExecuted,receivers);
+            return TheseHandlers(ExecutionStrategy.OnlyTheFirsHandlerFoundThatCanProcessTheArgumentIsExecuted,receivers);
         }
 
         public _Then AtMostAllOfTheseHandlers(
            params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
         {
-            return TheseHandlers(ExecutionStrategy.AllMatchingHandlersAreExecuted, receivers);
+            return TheseHandlers(ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted, receivers);
         }
 
         public class _Then
@@ -82,17 +82,17 @@ namespace NeatChain
                 return ExecutionChainSucceeded(out response, null,ExceptionHandler, dynamicResponseToExpectedTypeCaster);
             }
 
-            public bool ExecutionChainSucceeded<TResponse>(out  List<TResponse> response, TArgument arg, Action<string, Exception> ExceptionHandler = null,
+            public bool ExecutionChainSucceeded<TResponse>(out  List<TResponse> response, TArgument arg, Action<string, Exception> exceptionHandler = null,
                 Func<List<dynamic>, List<TResponse>> dynamicResponseToExpectedTypeCaster = null)
             {
                 return ExecutionChainSucceeded(out response, new List<TArgument>()
                 {
                     arg
-                },ExceptionHandler, dynamicResponseToExpectedTypeCaster);
+                },exceptionHandler, dynamicResponseToExpectedTypeCaster);
             }
 
             public bool ExecutionChainSucceeded<TResponse>(out List<TResponse> response, List<TArgument> arg = null,
-                Action<string,Exception> ExceptionHandler=null,
+                Action<string,Exception> exceptionHandler=null,
             Func<List<dynamic>, List<TResponse>> dynamicResponseToExpectedTypeCaster = null)
             {
                 arg = arg ?? new List<TArgument>();
@@ -105,11 +105,11 @@ namespace NeatChain
 
                     switch (Parent.ExecutionStrategy)
                     {
-                        case ExecutionStrategy.OnlyFirstMatchingHandlerIsExecuted:
+                        case ExecutionStrategy.OnlyTheFirsHandlerFoundThatCanProcessTheArgumentIsExecuted:
                             Parent.ExistingReceivers.First().ExecuteOnlyFirstMatchingHandlerInChain(out _response, arg);
                             break;
 
-                        case ExecutionStrategy.AllMatchingHandlersAreExecuted:
+                        case ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted:
                             Parent.ExistingReceivers.First().ExecuteAllMatchingHandlerInChain(out _response, arg);
                             break;
 
@@ -137,10 +137,10 @@ namespace NeatChain
                         const string message = "A receiver successfully executed your request, but the response could not be cast into the type you expected";
                         var unableToCastException = new Exception(message);
 
-                        if (ExceptionHandler == null)
+                        if (exceptionHandler == null)
                             throw unableToCastException;
                       
-                        ExceptionHandler.Invoke(message,e);
+                        exceptionHandler.Invoke(message,e);
 
                     }
                     status = true;
@@ -150,10 +150,10 @@ namespace NeatChain
                     const string message = "one of the handlers threw an exception";
                     var handlerException = new Exception(message);
 
-                    if (ExceptionHandler == null)
+                    if (exceptionHandler == null)
                         throw handlerException;
 
-                    ExceptionHandler.Invoke(message, e);
+                    exceptionHandler.Invoke(message, e);
 
                     
                 }

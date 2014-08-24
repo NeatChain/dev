@@ -1,18 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NeatChain.Tests.TestHandlers
 {
     public class Number1Handler : AChainMemberThatCanHandleArgumentType<int>
     {
-        protected override bool ExecutionCondition(List<int> arg)
+        protected override List<Action<int, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
         {
-            return (arg.First() == 1);
+            return new List<Action<int, int>>()
+            {
+                (arg, index) => itIsRequired.That(arg).IsNotNull(),
+                (arg, index) => itIsRequired.That(arg).IsAn<int>()
+            };
         }
 
-        protected override List<dynamic> Execute(List<int> arg)
+        protected override bool IsAbleToProcessArguments(int arg, List<int> args)
         {
-            return new List<dynamic> { arg.First() * 100 };
+            return (arg == 1);
+        }
+
+        protected override List<dynamic> Execute(int arg, List<int> args)
+        {
+            return new List<dynamic> { arg * 100 };
         }
     }
 }
