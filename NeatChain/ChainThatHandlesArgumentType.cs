@@ -16,7 +16,7 @@ namespace NeatChain
 
         public static ChainFactory<TArgument>._Then SetUp<TArgument>(params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
         {
-            return SetUp(ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted, receivers);
+            return SetUp(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
         }
         /// <summary>
         /// 
@@ -43,7 +43,7 @@ namespace NeatChain
 
             public  List<TResult> Execute< TResult>()
             {
-                var chainSetUp = SetUp(ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted, Receivers);
+                var chainSetUp = SetUp(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, Receivers);
                 List<TResult> result;
                 chainSetUp.ExecutionChainSucceeded(out result, Arg);
                 return result;

@@ -48,13 +48,13 @@ namespace NeatChain
             params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
         {
             
-            return TheseHandlers(ExecutionStrategy.OnlyTheFirsHandlerFoundThatCanProcessTheArgumentIsExecuted,receivers);
+            return TheseHandlers(ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,receivers);
         }
 
         public _Then AtMostAllOfTheseHandlers(
            params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
         {
-            return TheseHandlers(ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted, receivers);
+            return TheseHandlers(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
         }
 
         public class _Then
@@ -105,11 +105,11 @@ namespace NeatChain
 
                     switch (Parent.ExecutionStrategy)
                     {
-                        case ExecutionStrategy.OnlyTheFirsHandlerFoundThatCanProcessTheArgumentIsExecuted:
+                        case ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted:
                             Parent.ExistingReceivers.First().ExecuteOnlyFirstMatchingHandlerInChain(out _response, arg);
                             break;
 
-                        case ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted:
+                        case ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted:
                             Parent.ExistingReceivers.First().ExecuteAllMatchingHandlerInChain(out _response, arg);
                             break;
 

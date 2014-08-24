@@ -3,7 +3,7 @@
     public enum ExecutionStrategy
     {
         Unknown = 0,
-        OnlyTheFirsHandlerFoundThatCanProcessTheArgumentIsExecuted,
-        AllHandlersFoundThatCanProcessTheArgumentAreExecuted
+        OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
+        AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted
     }
 }
