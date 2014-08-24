@@ -9,13 +9,15 @@ You are provided with a neat opinionated pattern of input argument validation
 
 You are provided with the capability to only execute classes when its their responsibility to do so
 
-
 ```cs
 
-
-    [TestClass]
+ [TestClass]
     public class When_a_chain_is_created
     {
+```
+You can make things as explicit as this
+```cs
+
         /// <summary>
         /// You can make things as explicit as this
         /// </summary>
@@ -146,6 +148,11 @@ Or you can make things as complicated as this
                 Assert.IsTrue(converterWasCalled);
             });
         }
+        
+       ```
+       
+       
+       ```cs
     }
 
 
