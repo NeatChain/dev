@@ -33,7 +33,7 @@ namespace NeatChain
 
         protected long CallPosition { set; get; }
 
-        protected abstract bool IsAbleToProcessArguments(TArgument arg, List<TArgument> args);
+        protected abstract bool IsItsOwnResponsibility(TArgument arg, List<TArgument> args);
 
         protected abstract List<dynamic> Execute(TArgument arg, List<TArgument> args);
 
@@ -41,7 +41,7 @@ namespace NeatChain
 
         public void ExecuteOnlyFirstMatchingHandlerInChain(out  List<dynamic> responses, List<TArgument> args)
         {
-            if (IsAbleToProcessArguments(args.FirstOrDefault(), args))
+            if (IsItsOwnResponsibility(args.FirstOrDefault(), args))
             {
                 ValidateInputArguments(args);
 
@@ -53,7 +53,7 @@ namespace NeatChain
 
         public void ExecuteAllMatchingHandlerInChain(out  List<dynamic> response, List<TArgument> args)
         {
-            if (IsAbleToProcessArguments(args.FirstOrDefault(), args))
+            if (IsItsOwnResponsibility(args.FirstOrDefault(), args))
             {
                 ValidateInputArguments(args);
 

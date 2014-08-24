@@ -9,7 +9,7 @@ namespace NeatChain{
            return new List<Action<TArgument, int>>();
         }
 
-        protected override bool IsAbleToProcessArguments(TArgument firstArg, List<TArgument> arg)
+        protected override bool IsItsOwnResponsibility(TArgument firstArg, List<TArgument> arg)
         {
             return NextReceiver == null;
         }

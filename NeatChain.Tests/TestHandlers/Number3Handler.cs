@@ -15,7 +15,7 @@ namespace NeatChain.Tests.TestHandlers
             };
         }
 
-        protected override bool IsAbleToProcessArguments(int arg, List<int> args)
+        protected override bool IsItsOwnResponsibility(int arg, List<int> args)
         {
             return (arg == 3);
         }
