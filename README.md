@@ -134,3 +134,93 @@ Neatly set up a chain of objects that are strategically executed
 
 
 ```
+
+
+
+Here are the definitions for the handlers
+
+
+```cs
+
+   public class Number1Handler : AChainMemberThatCanHandleArgumentType<int>
+    {
+        protected override List<Action<int, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
+        {
+            return new List<Action<int, int>>()
+            {
+                (arg, index) => itIsRequired.That(arg).IsNotNull(),
+                (arg, index) => itIsRequired.That(arg).IsAn<int>()
+            };
+        }
+
+        protected override bool IsAbleToProcessArguments(int arg, List<int> args)
+        {
+            return (arg == 1);
+        }
+
+        protected override List<dynamic> Execute(int arg, List<int> args)
+        {
+            return new List<dynamic> { arg * 100 };
+        }
+    }
+
+
+
+
+
+
+   public class Number2Handler : AChainMemberThatCanHandleArgumentType<int>
+    {
+        protected override List<Action<int, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
+        {
+            return new List<Action<int, int>>()
+            {
+                (arg, index) => itIsRequired.That(arg).IsNotNull(),
+                (arg, index) => itIsRequired.That(arg).IsAn<int>()
+            };
+        }
+
+        protected override bool IsAbleToProcessArguments(int arg, List<int> args)
+        {
+            return (arg == 2);
+        }
+
+        protected override List<dynamic> Execute(int arg, List<int> args)
+        {
+            return new List<dynamic> { arg * 100 };
+        }
+    }
+    
+    
+    
+    
+    
+   public class Number3Handler : AChainMemberThatCanHandleArgumentType<int>
+    {
+        protected override List<Action<int, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
+        {
+            return new List<Action<int, int>>()
+            {
+                (arg, index) => itIsRequired.That(arg).IsNotNull(),
+                (arg, index) => itIsRequired.That(arg).IsAn<int>()
+            };
+        }
+
+        protected override bool IsAbleToProcessArguments(int arg, List<int> args)
+        {
+            return (arg == 3);
+        }
+
+        protected override List<dynamic> Execute(int arg, List<int> args)
+        {
+            return new List<dynamic> { arg * 100 };
+        }
+    }
+    
+
+
+
+```
+
+
+
