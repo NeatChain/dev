@@ -4,6 +4,12 @@ dev
 Neatly set up a chain of objects that are strategically executed
 
 
+You are provided with a neat opinionated pattern of input argument validation
+
+
+You are provided with the capability to only execute classes when its their responsibility to do so
+
+
 ```cs
 
 
@@ -29,7 +35,10 @@ Neatly set up a chain of objects that are strategically executed
                 Assert.AreEqual(arg * 100, result.First());
             });
         }
+```
+You can make things as simple as this
 
+```cs
         /// <summary>
         /// You can make things as simple as this
         /// </summary>
@@ -50,7 +59,10 @@ Neatly set up a chain of objects that are strategically executed
                 Assert.AreEqual(arg * 100, result.First());
             });
         }
+```
+You can make things as easy as this
 
+```cs
         /// <summary>
         /// You can make things as easy as this
         /// </summary>
@@ -70,7 +82,10 @@ Neatly set up a chain of objects that are strategically executed
             //    to process the argument, if not, argument will not even be validated and the execute method will not be called.
             //3. method execution still passes through the same pipeline as chain execution, thus same neat exception handling
         }
+```
+You can make things as 'one liner' as this
 
+```cs
         /// <summary>
         /// You can make things as 'one liner' as this
         /// </summary>
@@ -82,7 +97,10 @@ Neatly set up a chain of objects that are strategically executed
             Assert.IsTrue(result.Count == 1);
             Assert.AreEqual(100, result.First());
         }
+```
+Or you can make things as complicated as this
 
+```cs
         /// <summary>
         /// Or you can make things as complicated as this
         /// </summary>
@@ -166,7 +184,10 @@ Here are the definitions for the handlers
 
 
 
+```
 
+
+```cs
 
 
    public class Number2Handler : AChainMemberThatCanHandleArgumentType<int>
@@ -192,7 +213,10 @@ Here are the definitions for the handlers
     }
     
     
-    
+    ```
+
+
+```cs
     
     
    public class Number3Handler : AChainMemberThatCanHandleArgumentType<int>
