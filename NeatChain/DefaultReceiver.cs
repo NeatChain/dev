@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 
 namespace NeatChainFx{
-    public class DefaultReceiver<TArgument> : AChainMemberThatCanHandleArgumentType<TArgument>
+    public class DefaultReceiver<TArgument> : NetChainHandler<TArgument>
     {
-        protected override List<Action<TArgument, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
+        protected override List<Action<TArgument, int>> SetValidations(ChainCondition chainCondition, List<Action<TArgument, int>> validations)
         {
-           return new List<Action<TArgument, int>>();
+           return validations;
         }
 
        
 
-        protected override bool ItHasTheResponsibility(TArgument arg, List<TArgument> args)
+        protected override bool HasResponsibilityToExecute(TArgument arg, List<TArgument> args)
         {
             return NextReceiver == null;
         }

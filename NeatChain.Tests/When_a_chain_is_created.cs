@@ -17,7 +17,7 @@ namespace NeatChainFx.Tests
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed1()
         {
             var testArg = new List<int> {1, 2, 3};
-            ChainFactory<int>._Then chainSetUp = NeatChain.ThatAcceptsArgumentType<int>.ToBeHandledBy
+            var chainSetUp = NeatChain.ThatAcceptsArgumentType<int>.ToBeHandledBy
                 .AtMostOneOfTheseHandlers(
                     new Number1Handler(),
                     new Number2Handler(),
@@ -38,7 +38,7 @@ namespace NeatChainFx.Tests
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed2()
         {
             var testArg = new List<int> {1, 2, 3};
-            ChainFactory<int>._Then chainSetUp = NeatChain.SetUp(
+            var  chainSetUp = NeatChain.SetUp(
                 ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
                 new Number1Handler(),
                 new Number2Handler(),
@@ -58,7 +58,7 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed3()
         {
-            ChainFactory<int>._Then chainSetUp = NeatChain.SetUp(new Number1Handler());
+            var  chainSetUp = NeatChain.SetUp(new Number1Handler());
 
             List<int> result;
             Assert.IsTrue(chainSetUp.ExecutionChainSucceeded(out result, 1));
@@ -78,7 +78,7 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed4()
         {
-            List<int> result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
+            var result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
 
             Assert.IsTrue(result.Count == 1);
             Assert.AreEqual(100, result.First());
@@ -91,10 +91,10 @@ namespace NeatChainFx.Tests
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed5()
         {
             const string exceptionMessageCreatedInTheConverter = "exceptionMessageCreatedInTheConverter";
-            bool exceptionWasRaised = false;
-            bool converterWasCalled = false;
+            var exceptionWasRaised = false;
+            var converterWasCalled = false;
             var testArg = new List<int> {1, 2, 3};
-            ChainFactory<int>._Then chainSetUp = NeatChain.SetUp(
+            var  chainSetUp = NeatChain.SetUp(
                 ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
                 new Number1Handler(),
                 new Number2Handler(),

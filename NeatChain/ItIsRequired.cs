@@ -1,10 +1,10 @@
 ﻿namespace NeatChainFx
 {
-    public class ItIsRequired
+    public class ChainCondition
     {
-        public ShouldBe<T> That<T>(T arg)
+        public Requires<T> Requires<T>(T arg)
         {
-            return new ShouldBe<T>(arg);
+            return new Requires<T>(arg);
         }
     }
 }

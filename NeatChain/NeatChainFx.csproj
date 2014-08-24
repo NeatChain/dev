@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AChainMemberThatCanHandleArgumentType.cs" />
+    <Compile Include="NetChainHandler.cs" />
     <Compile Include="ChainFactory.cs" />
     <Compile Include="ChainThatHandlesArgumentType.cs" />
     <Compile Include="DefaultReceiver.cs" />

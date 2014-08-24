@@ -11,18 +11,18 @@ namespace NeatChainFx
             Init();
         }
 
-        private List<AChainMemberThatCanHandleArgumentType<TArgument>> ExistingReceivers { set; get; }
+        private List<NetChainHandler<TArgument>> ExistingReceivers { set; get; }
 
         private void Init()
         {
-            ExistingReceivers = new List<AChainMemberThatCanHandleArgumentType<TArgument>>
+            ExistingReceivers = new List<NetChainHandler<TArgument>>
             {
                 new DefaultReceiver<TArgument>()
             };
         }
 
         private _Then CreateChainReceivers(
-            params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+            params NetChainHandler<TArgument>[] receivers)
         {
             Init();
             receivers.ToList().ForEach(x =>
@@ -37,7 +37,7 @@ namespace NeatChainFx
         public ExecutionStrategy ExecutionStrategy { set; get; }
 
         public _Then TheseHandlers( ExecutionStrategy executionStrategy,
-            params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+            params NetChainHandler<TArgument>[] receivers)
         {
             ExecutionStrategy = executionStrategy;
             return CreateChainReceivers(receivers);
@@ -45,14 +45,14 @@ namespace NeatChainFx
 
 
         public _Then AtMostOneOfTheseHandlers(
-            params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+            params NetChainHandler<TArgument>[] receivers)
         {
             
             return TheseHandlers(ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,receivers);
         }
 
         public _Then AtMostAllOfTheseHandlers(
-           params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+           params NetChainHandler<TArgument>[] receivers)
         {
             return TheseHandlers(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
         }

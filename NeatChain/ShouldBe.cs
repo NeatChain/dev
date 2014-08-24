@@ -2,7 +2,7 @@
 
 namespace NeatChainFx
 {
-    public class ShouldBe<T>
+    public class Requires<T>
     {
         protected Action<string> Failed = (message) =>
         {
@@ -11,7 +11,7 @@ namespace NeatChainFx
 
         protected T Arg { set; get; }
 
-        public ShouldBe(T arg)
+        public Requires(T arg)
         {
             Arg = arg;
         }

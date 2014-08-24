@@ -3,18 +3,16 @@ using System.Collections.Generic;
 
 namespace NeatChainFx.Tests.TestHandlers
 {
-    public class Number2Handler : AChainMemberThatCanHandleArgumentType<int>
+    public class Number2Handler : NetChainHandler<int>
     {
-        protected override List<Action<int, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
+        protected override List<Action<int, int>> SetValidations(ChainCondition chainCondition, List<Action<int, int>> validations)
         {
-            return new List<Action<int, int>>
-            {
-                (arg, index) => itIsRequired.That(arg).IsNotNull(),
-                (arg, index) => itIsRequired.That(arg).IsAn<int>()
-            };
+            validations.Add((arg, index) => chainCondition.Requires(arg).IsNotNull());
+            validations.Add((arg, index) => chainCondition.Requires(arg).IsAn<int>());
+            return validations;
         }
 
-        protected override bool ItHasTheResponsibility(int arg, List<int> args)
+        protected override bool HasResponsibilityToExecute(int arg, List<int> args)
         {
             return (arg == 2);
         }

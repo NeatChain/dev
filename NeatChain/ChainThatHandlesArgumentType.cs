@@ -9,12 +9,12 @@ namespace NeatChainFx
             public static ChainFactory<TArgument> ToBeHandledBy = new ChainFactory<TArgument>();
         }
 
-        public static ChainFactory<TArgument>._Then SetUp<TArgument>(ExecutionStrategy executionStrategy, params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+        public static ChainFactory<TArgument>._Then SetUp<TArgument>(ExecutionStrategy executionStrategy, params NetChainHandler<TArgument>[] receivers)
         {
             return ThatAcceptsArgumentType<TArgument>.ToBeHandledBy.TheseHandlers(executionStrategy, receivers);
         }
 
-        public static ChainFactory<TArgument>._Then SetUp<TArgument>(params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+        public static ChainFactory<TArgument>._Then SetUp<TArgument>(params NetChainHandler<TArgument>[] receivers)
         {
             return SetUp(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
         }
@@ -26,7 +26,7 @@ namespace NeatChainFx
         /// <param name="arg">actual argument of type TArgument</param>
         /// <param name="receivers">The handlers</param>
         /// <returns></returns>
-        public static _Execute<TArgument> SetUpWithArgument<TArgument>(TArgument arg, params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+        public static _Execute<TArgument> SetUpWithArgument<TArgument>(TArgument arg, params NetChainHandler<TArgument>[] receivers)
         {
             return new _Execute<TArgument>(arg,receivers);
         }
@@ -34,8 +34,8 @@ namespace NeatChainFx
         public class _Execute<TArgument>
         {
             private TArgument Arg { set; get; }
-            AChainMemberThatCanHandleArgumentType<TArgument>[] Receivers { set; get; }
-            public _Execute(TArgument arg, params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+            NetChainHandler<TArgument>[] Receivers { set; get; }
+            public _Execute(TArgument arg, params NetChainHandler<TArgument>[] receivers)
             {
                 Arg = arg;
                 Receivers = receivers;

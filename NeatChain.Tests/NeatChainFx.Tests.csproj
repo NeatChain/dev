@@ -6,8 +6,8 @@
     <ProjectGuid>{E78E3643-D527-49DC-9165-62D4D8BE6566}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NeatChain.Tests</RootNamespace>
-    <AssemblyName>NeatChain.Tests</AssemblyName>
+    <RootNamespace>NeatChainFx.Tests</RootNamespace>
+    <AssemblyName>NeatChainFx.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -58,6 +58,7 @@
     <Compile Include="TestHandlers\Number1Handler.cs" />
     <Compile Include="TestHandlers\Number2Handler.cs" />
     <Compile Include="TestHandlers\Number3Handler.cs" />
+    <Compile Include="when_Number1Handler_is_run_outside_the_usual_pileline.cs" />
     <Compile Include="When_a_chain_is_created.cs" />
   </ItemGroup>
   <ItemGroup>
