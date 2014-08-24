@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeatChainFx.Tests.TestHandlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using NeatChainFx.Tests.TestHandlers;
 
 namespace NeatChainFx.Tests
 {
@@ -16,7 +15,7 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed1()
         {
-            var testArg = new List<int> {1, 2, 3};
+            var testArg = new List<int> { 1, 2, 3 };
             var chainSetUp = NeatChain.ThatAcceptsArgumentType<int>.ToBeHandledBy
                 .AtMostOneOfTheseHandlers(
                     new Number1Handler(),
@@ -27,7 +26,7 @@ namespace NeatChainFx.Tests
                 List<int> result;
                 Assert.IsTrue(chainSetUp.ExecutionChainSucceeded(out result, arg));
                 Assert.IsTrue(result.Count == 1);
-                Assert.AreEqual(arg*100, result.First());
+                Assert.AreEqual(arg * 100, result.First());
             });
         }
 
@@ -37,8 +36,8 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed2()
         {
-            var testArg = new List<int> {1, 2, 3};
-            var  chainSetUp = NeatChain.SetUp(
+            var testArg = new List<int> { 1, 2, 3 };
+            var chainSetUp = NeatChain.SetUp(
                 ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
                 new Number1Handler(),
                 new Number2Handler(),
@@ -48,7 +47,7 @@ namespace NeatChainFx.Tests
                 List<int> result;
                 Assert.IsTrue(chainSetUp.ExecutionChainSucceeded(out result, arg));
                 Assert.IsTrue(result.Count == 1);
-                Assert.AreEqual(arg*100, result.First());
+                Assert.AreEqual(arg * 100, result.First());
             });
         }
 
@@ -58,7 +57,7 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed3()
         {
-            var  chainSetUp = NeatChain.SetUp(new Number1Handler());
+            var chainSetUp = NeatChain.SetUp(new Number1Handler());
 
             List<int> result;
             Assert.IsTrue(chainSetUp.ExecutionChainSucceeded(out result, 1));
@@ -90,11 +89,41 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed5()
         {
+            var timesNumber1HandlerStarted = 0;
+            var timesNumber1HandlerEnded = 0;
+            var timesNumber2HandlerStarted = 0;
+            var timesNumber2HandlerEnded = 0;
+            var timesNumber3HandlerStarted = 0;
+            var timesNumber3HandlerEnded = 0;
+            NeatChain.SetNotificationsAboutAHandlerExecution<Number1Handler>((e) =>
+            {
+                timesNumber1HandlerStarted++;
+            }, (e) =>
+            {
+                timesNumber1HandlerEnded++;
+            });
+
+            NeatChain.SetNotificationsAboutAHandlerExecution<Number2Handler>((e) =>
+            {
+                timesNumber2HandlerStarted++;
+            }, (e) =>
+            {
+                timesNumber2HandlerEnded++;
+            });
+
+            NeatChain.SetNotificationsAboutAHandlerExecution<Number2Handler>((e) =>
+            {
+                timesNumber3HandlerStarted++;
+            }, (e) =>
+            {
+                timesNumber3HandlerEnded++;
+            });
+
             const string exceptionMessageCreatedInTheConverter = "exceptionMessageCreatedInTheConverter";
             var exceptionWasRaised = false;
             var converterWasCalled = false;
-            var testArg = new List<int> {1, 2, 3};
-            var  chainSetUp = NeatChain.SetUp(
+            var testArg = new List<int> { 1, 2, 3 };
+            var chainSetUp = NeatChain.SetUp(
                 ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
                 new Number1Handler(),
                 new Number2Handler(),
@@ -116,18 +145,28 @@ namespace NeatChainFx.Tests
                     // the opportunity to provide a custom converter to the expected type
                     // else a direct cast will be used
                     var tmpResult = new List<int>();
-                    objectsReturned.ForEach(x => tmpResult.Add((int) x));
+                    objectsReturned.ForEach(x => tmpResult.Add((int)x));
 
                     Assert.IsTrue(tmpResult.Count == 1);
-                    Assert.AreEqual(arg*100, tmpResult.First());
+                    Assert.AreEqual(arg * 100, tmpResult.First());
                     //lets throw an exception here to simulate something going wrong in a given handler
                     throw new Exception(exceptionMessageCreatedInTheConverter);
                     return tmpResult;
                 }));
+
                 Assert.IsTrue(result.Count == 0);
                 Assert.IsTrue(exceptionWasRaised);
                 Assert.IsTrue(converterWasCalled);
             });
+
+            Assert.IsTrue(timesNumber1HandlerEnded == 1);
+            Assert.IsTrue(timesNumber1HandlerStarted == 1);
+
+            Assert.IsTrue(timesNumber2HandlerEnded == 1);
+            Assert.IsTrue(timesNumber2HandlerStarted == 1);
+
+            Assert.IsTrue(timesNumber3HandlerEnded == 1);
+            Assert.IsTrue(timesNumber3HandlerStarted == 1);
         }
     }
 }

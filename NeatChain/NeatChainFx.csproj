@@ -39,9 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HandlerExecutionEventArgs.cs" />
+    <Compile Include="HanlderExecutionNotification.cs" />
     <Compile Include="NetChainHandler.cs" />
     <Compile Include="ChainFactory.cs" />
-    <Compile Include="ChainThatHandlesArgumentType.cs" />
+    <Compile Include="NeatChain.cs" />
     <Compile Include="DefaultReceiver.cs" />
     <Compile Include="ExecutionStrategy.cs" />
     <Compile Include="ItIsRequired.cs" />

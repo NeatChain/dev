@@ -7,15 +7,46 @@ namespace NeatChainFx
     public abstract class NetChainHandler<TArgument>
     {
 
+        private List<dynamic> _Execute(TArgument arg,List<TArgument> args)
+        {
+            
+            NeatChain.OnHandlerExecutionStartedEvent(new HandlerExecutionEventArgs()
+            {
+                CurrentTime = DateTime.UtcNow,
+                HandlerType = GetType(),
+                HandlerName = GetType().Name,
+                  HandlerFullName = GetType().FullName
+            });
+            List<dynamic> result;
+            try
+            {
+                 result = Execute(arg, args);
+            }
+            finally
+            {
+                NeatChain.OnHandlerExecutionEndedEvent(new HandlerExecutionEventArgs()
+                {
+                    CurrentTime = DateTime.UtcNow,
+                    HandlerType = GetType(),
+                    HandlerName = GetType().Name,
+                    HandlerFullName = GetType().FullName
+                });
+            }
+
+
+            return result;
+        }
+
+
         #region Public API
         public List<dynamic> Execute(List<TArgument> args)
         {
-            return Execute(args.FirstOrDefault(), args);
+            return _Execute(args.FirstOrDefault(), args);
         }
 
         public List<dynamic> Execute(TArgument arg)
         {
-            return Execute(arg, new List<TArgument>() { arg });
+            return _Execute(arg, new List<TArgument>() { arg });
         }
 
         /// <summary>
@@ -23,7 +54,7 @@ namespace NeatChainFx
         /// </summary>
         /// <param name="args"></param>
         /// <param name="exceptionHandler"></param>
-        public void ValidateInputArguments(List<TArgument> args, Action<string,Exception> exceptionHandler=null)
+        public void ValidateInputArguments(List<TArgument> args, Action<string, Exception> exceptionHandler=null)
         {
             try
             {
@@ -80,6 +111,9 @@ namespace NeatChainFx
 
         #endregion
 
+        
+
+
         protected NetChainHandler<TArgument> NextReceiver { set; get; }
 
         internal void SetNextReceiver(NetChainHandler<TArgument> nextReceiver)
@@ -96,7 +130,7 @@ namespace NeatChainFx
         protected abstract List<Action<TArgument, int>> SetValidations(ChainCondition chainCondition, List<Action<TArgument, int>> validations);
 
      
-   protected long CallPosition { set; get; }
+        protected long CallPosition { set; get; }
 
         protected abstract bool HasResponsibilityToExecute(TArgument firstArg, List<TArgument> args);
 
