@@ -26,12 +26,28 @@ namespace NeatChain
         /// <param name="arg">actual argument of type TArgument</param>
         /// <param name="receivers">The handlers</param>
         /// <returns></returns>
-        public static List<TResult> Execute<TArgument, TResult>(TArgument arg, params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+        public static _Execute<TArgument> SetUpWithArgument<TArgument>(TArgument arg, params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
         {
-            var chainSetUp = SetUp(ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted, receivers);
-            List<TResult> result;
-            chainSetUp.ExecutionChainSucceeded(out result, arg);
-            return result;
+            return new _Execute<TArgument>(arg,receivers);
+        }
+
+        public class _Execute<TArgument>
+        {
+            private TArgument Arg { set; get; }
+            AChainMemberThatCanHandleArgumentType<TArgument>[] Receivers { set; get; }
+            public _Execute(TArgument arg, params AChainMemberThatCanHandleArgumentType<TArgument>[] receivers)
+            {
+                Arg = arg;
+                Receivers = receivers;
+            }
+
+            public  List<TResult> Execute< TResult>()
+            {
+                var chainSetUp = SetUp(ExecutionStrategy.AllHandlersFoundThatCanProcessTheArgumentAreExecuted, Receivers);
+                List<TResult> result;
+                chainSetUp.ExecutionChainSucceeded(out result, Arg);
+                return result;
+            }
         }
     }
 }
