@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NeatChain")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("iocoded")]
 [assembly: AssemblyProduct("NeatChain")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © Samuel Bamgboye 2014")]
+[assembly: AssemblyTrademark("NeatChain")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
