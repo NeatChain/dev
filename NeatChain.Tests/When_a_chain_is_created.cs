@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeatChain.Tests.TestHandlers;
 
-namespace NeatChain.Tests
+using NeatChainFx.Tests.TestHandlers;
+
+namespace NeatChainFx.Tests
 {
     [TestClass]
     public class When_a_chain_is_created

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeatChain
+namespace NeatChainFx
 {
     public class ShouldBe<T>
     {

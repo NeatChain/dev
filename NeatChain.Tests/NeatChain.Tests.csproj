@@ -61,9 +61,9 @@
     <Compile Include="When_a_chain_is_created.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NeatChain\NeatChain.csproj">
+    <ProjectReference Include="..\NeatChain\NeatChainFx.csproj">
       <Project>{70ae47ea-515e-4815-a22e-1aea25d3e82e}</Project>
-      <Name>NeatChain</Name>
+      <Name>NeatChainFx</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

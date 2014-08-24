@@ -7,8 +7,8 @@
     <ProjectGuid>{70AE47EA-515E-4815-A22E-1AEA25D3E82E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NeatChain</RootNamespace>
-    <AssemblyName>NeatChain</AssemblyName>
+    <RootNamespace>NeatChainFx</RootNamespace>
+    <AssemblyName>NeatChainFx</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

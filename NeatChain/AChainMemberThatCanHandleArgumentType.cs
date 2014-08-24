@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeatChain
+namespace NeatChainFx
 {
     public abstract class AChainMemberThatCanHandleArgumentType<TArgument>
     {

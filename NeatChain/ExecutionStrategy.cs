@@ -1,4 +1,4 @@
-﻿namespace NeatChain
+﻿namespace NeatChainFx
 {
     public enum ExecutionStrategy
     {

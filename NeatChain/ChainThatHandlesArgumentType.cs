@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NeatChain
+namespace NeatChainFx
 {
     public static class NeatChain
     {

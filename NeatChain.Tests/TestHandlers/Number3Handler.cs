@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NeatChain.Tests.TestHandlers
+namespace NeatChainFx.Tests.TestHandlers
 {
     public class Number3Handler : AChainMemberThatCanHandleArgumentType<int>
     {

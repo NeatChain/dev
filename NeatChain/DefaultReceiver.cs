@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NeatChain{
+namespace NeatChainFx{
     public class DefaultReceiver<TArgument> : AChainMemberThatCanHandleArgumentType<TArgument>
     {
         protected override List<Action<TArgument, int>> GetValidationDefinitions(ItIsRequired itIsRequired)
