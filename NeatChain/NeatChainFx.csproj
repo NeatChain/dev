@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DecoupleExecuteMaping.cs" />
     <Compile Include="HandlerExecutionEventArgs.cs" />
     <Compile Include="HanlderExecutionNotification.cs" />
     <Compile Include="NetChainHandler.cs" />
@@ -46,9 +47,10 @@
     <Compile Include="NeatChain.cs" />
     <Compile Include="DefaultReceiver.cs" />
     <Compile Include="ExecutionStrategy.cs" />
-    <Compile Include="ItIsRequired.cs" />
+    <Compile Include="ChainCondition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShouldBe.cs" />
+    <Compile Include="InjectExecuteLabel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

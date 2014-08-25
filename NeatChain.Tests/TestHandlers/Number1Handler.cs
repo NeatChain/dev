@@ -7,6 +7,7 @@ namespace NeatChainFx.Tests.TestHandlers
     {
         protected override List<Action<int, int>> SetValidations(ChainCondition chainCondition, List<Action<int, int>> validations)
         {
+
             validations.Add((arg, index) => chainCondition.Requires(arg).IsNotNull());
             validations.Add((arg, index) => chainCondition.Requires(arg).IsAn<int>());
             return validations;
@@ -15,12 +16,16 @@ namespace NeatChainFx.Tests.TestHandlers
 
         protected override bool HasResponsibilityToExecute(int arg, List<int> args)
         {
+           
             return (arg == 1);
         }
 
         protected override List<dynamic> Execute(int arg, List<int> args)
         {
-            return new List<dynamic> {arg*100};
+            return new List<dynamic>
+            {
+                NeatChain.InjectExecute<InjectExecuteLabelTest, int>(() => arg * 100)
+            };
         }
     }
 }

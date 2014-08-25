@@ -5,61 +5,153 @@ namespace NeatChainFx
 {
     public static class NeatChain
     {
-        private static bool _notificationsAboutAHandlerExecution = false;
+        /// <summary>
+        /// Warning!! Only enable this in unit test
+        /// </summary>
+        public static bool EnableFakeExecutions { set; get; }
 
-        private static readonly List< HanlderExecutionNotification> HanlderExecutionNotifications=new List<HanlderExecutionNotification>();
+        private static readonly List<InjectExecuteMaping> InjectExecuteFakeMapings = new List<InjectExecuteMaping>();
 
-        public static void SetHandlerExecutionNotification<T>(Action<HandlerExecutionEventArgs> onHandlerExecutionStarted, Action<HandlerExecutionEventArgs> onHandlerExecutionEnded = null) 
+        private static void SetInjectExecuteFake<TS, T>(Func<T> splitExecutBody)
+            where TS : InjectExecuteAndReturnType<T>
+            where T : new()
         {
-            var typeToSet = typeof (T);
+            var typeFullName = typeof(TS).FullName;
 
-            //if (HanlderExecutionNotifications.Exists(x => x.HandlerType.Name == typeToSet.Name))
-            //{
-            //    throw new Exception("Notification for " + typeToSet.Name + " has already been registered");
-            //}
+            var exists = false;
+            InjectExecuteFakeMapings.ForEach((x) =>
+            {
+                if (x.AUniqueInjectExecuteLabelFullName == typeFullName)
+                {
+                    x.SplitExecutBody = splitExecutBody;
+                    exists = true;
+                }
+            }
+        );
+            if (exists) return;
+            InjectExecuteFakeMapings.Add(new InjectExecuteMaping()
+            {
+                SplitExecutBody = splitExecutBody,
+
+                AUniqueInjectExecuteLabelFullName = typeFullName
+            });
+        }
+
+        public static class SetFake
+        {
+            public static void InjectExecute<TS>(Action splitExecutBody)
+                       where TS : InjectExecuteAndReturnType<bool>
+            {
+                InjectExecute<TS, bool>(() =>
+                {
+                    splitExecutBody.Invoke();
+                    return true;
+                });
+            }
+
+            public static void InjectExecute<TS, T>(Func<T> splitExecutBody)
+                where TS : InjectExecuteAndReturnType<T>
+                where T : new()
+            {
+                if (typeof(TS).FullName == typeof(InjectExecuteAndReturnType<T>).FullName)
+                {
+                    throw new Exception("You cannot use 'InjectExecuteLabel' class as an InjectExecute Label. Please create and use only instances of it");
+                }
+                SetInjectExecuteFake<TS, T>(splitExecutBody);
+            }
+        }
+
+        public static void InjectExecute<TS>(Action splitExecutBody) where TS : InjectExecuteAndReturnType<bool>
+        {
+            InjectExecute<TS, bool>(() =>
+            {
+                splitExecutBody.Invoke();
+                return true;
+            });
+        }
+
+        public static T InjectExecute<TS, T>(Func<T> splitExecutBody) where TS : InjectExecuteAndReturnType<T>
+        {
+            if (!EnableFakeExecutions)
+            {
+                return splitExecutBody.Invoke();
+            }
+            var TypeOfLabel = typeof(TS).FullName;
+
+            var availableFakeExecution = InjectExecuteFakeMapings.Find(x => x.AUniqueInjectExecuteLabelFullName == TypeOfLabel);
+
+            if (availableFakeExecution == null)
+                return splitExecutBody.Invoke();
+
+            try
+            {
+                object result;
+                try
+                {
+                    result = ((Func<T>)availableFakeExecution.SplitExecutBody).Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("An exception occured while trying to run fake execution provided for " + TypeOfLabel + ". Please see inner exception for details", e);
+                }
+
+                return (T)result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("An exception occured while trying to cast result of the fake execution provided for " + TypeOfLabel + ". Please see inner exception for details", e);
+            }
+        }
+
+        private static bool NotificationsAboutAHandlerExecution { set; get; }
+
+        private static readonly List<HanlderExecutionNotification> HanlderExecutionNotifications = new List<HanlderExecutionNotification>();
+
+        public static void SetHandlerExecutionNotification<T>(Action<HandlerExecutionEventArgs> onHandlerExecutionStarted, Action<HandlerExecutionEventArgs> onHandlerExecutionEnded = null)
+        {
+            var typeToSet = typeof(T);
+
             HanlderExecutionNotifications.Add(new HanlderExecutionNotification()
             {
                 OnHandlerExecutionStarted = onHandlerExecutionStarted,
                 HandlerType = typeToSet,
                 OnHandlerExecutionEnded = onHandlerExecutionEnded
             });
-            
 
-
-            if (_notificationsAboutAHandlerExecution) return;
-            _notificationsAboutAHandlerExecution = true;
+            if (NotificationsAboutAHandlerExecution) return;
+            NotificationsAboutAHandlerExecution = true;
             OnHandlerExecutionStarted += NeatChain_OnHandlerExecutionStarted;
 
             OnHandlerExecutionEnded += NeatChain_OnHandlerExecutionEnded;
-
         }
 
-        static void NeatChain_OnHandlerExecutionEnded(object sender, HandlerExecutionEventArgs e)
+        private static void NeatChain_OnHandlerExecutionEnded(object sender, HandlerExecutionEventArgs e)
         {
-           HanlderExecutionNotifications.ForEach(x=> {
-               if (e.HandlerFullName == x.HandlerType.FullName)
-                   if (x.OnHandlerExecutionEnded != null)
-                   { 
-                       x.OnHandlerExecutionEnded.Invoke(e);
-                   }
-                                                        
-           });
-        }
-
-        static void NeatChain_OnHandlerExecutionStarted(object sender, HandlerExecutionEventArgs e)
-        {
-            HanlderExecutionNotifications.ForEach(x => {
+            HanlderExecutionNotifications.ForEach(x =>
+            {
                 if (e.HandlerFullName == x.HandlerType.FullName)
-                    if (x.OnHandlerExecutionStarted != null)
+                    if (x.OnHandlerExecutionEnded != null)
                     {
-  x.OnHandlerExecutionStarted.Invoke(e);
+                        x.OnHandlerExecutionEnded.Invoke(e);
                     }
-                                                         
+            });
+        }
+
+        private static void NeatChain_OnHandlerExecutionStarted(object sender, HandlerExecutionEventArgs e)
+        {
+            HanlderExecutionNotifications.ForEach(x =>
+            {
+                if (e.HandlerFullName != x.HandlerType.FullName) return;
+                if (x.OnHandlerExecutionStarted != null)
+                {
+                    x.OnHandlerExecutionStarted.Invoke(e);
+                }
             });
         }
 
         // Declare the event using EventHandler<T>
         public static event EventHandler<HandlerExecutionEventArgs> OnHandlerExecutionStarted;
+
         internal static void OnHandlerExecutionStartedEvent(HandlerExecutionEventArgs e)
         {
             var handler = OnHandlerExecutionStarted;
@@ -69,8 +161,8 @@ namespace NeatChainFx
             }
         }
 
-
         public static event EventHandler<HandlerExecutionEventArgs> OnHandlerExecutionEnded;
+
         internal static void OnHandlerExecutionEndedEvent(HandlerExecutionEventArgs e)
         {
             var handler = OnHandlerExecutionEnded;
@@ -79,9 +171,6 @@ namespace NeatChainFx
                 handler(new object(), e);
             }
         }
-
-
-        
 
         public static class ThatAcceptsArgumentType<TArgument>
         {
