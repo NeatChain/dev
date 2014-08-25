@@ -89,13 +89,19 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed5()
         {
+            // you can listen for all events
+            NeatChain.OnHandlerExecutionStarted += NeatChain_OnHandlerExecutionStarted;
+            NeatChain.OnHandlerExecutionEnded += NeatChain_OnHandlerExecutionEnded;
+
             var timesNumber1HandlerStarted = 0;
             var timesNumber1HandlerEnded = 0;
             var timesNumber2HandlerStarted = 0;
             var timesNumber2HandlerEnded = 0;
             var timesNumber3HandlerStarted = 0;
             var timesNumber3HandlerEnded = 0;
-            NeatChain.SetNotificationsAboutAHandlerExecution<Number1Handler>((e) =>
+
+            // or for only events relating to a specific handler
+            NeatChain.SetHandlerExecutionNotification<Number1Handler>((e) =>
             {
                 timesNumber1HandlerStarted++;
             }, (e) =>
@@ -103,7 +109,7 @@ namespace NeatChainFx.Tests
                 timesNumber1HandlerEnded++;
             });
 
-            NeatChain.SetNotificationsAboutAHandlerExecution<Number2Handler>((e) =>
+            NeatChain.SetHandlerExecutionNotification<Number2Handler>((e) =>
             {
                 timesNumber2HandlerStarted++;
             }, (e) =>
@@ -111,7 +117,7 @@ namespace NeatChainFx.Tests
                 timesNumber2HandlerEnded++;
             });
 
-            NeatChain.SetNotificationsAboutAHandlerExecution<Number2Handler>((e) =>
+            NeatChain.SetHandlerExecutionNotification<Number2Handler>((e) =>
             {
                 timesNumber3HandlerStarted++;
             }, (e) =>
@@ -167,6 +173,16 @@ namespace NeatChainFx.Tests
 
             Assert.IsTrue(timesNumber3HandlerEnded == 1);
             Assert.IsTrue(timesNumber3HandlerStarted == 1);
+        }
+
+        void NeatChain_OnHandlerExecutionEnded(object sender, HandlerExecutionEventArgs e)
+        {
+            
+        }
+
+        void NeatChain_OnHandlerExecutionStarted(object sender, HandlerExecutionEventArgs e)
+        {
+            
         }
     }
 }

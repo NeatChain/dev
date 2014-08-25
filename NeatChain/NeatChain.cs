@@ -9,7 +9,7 @@ namespace NeatChainFx
 
         private static readonly List< HanlderExecutionNotification> HanlderExecutionNotifications=new List<HanlderExecutionNotification>();
 
-        public static void SetNotificationsAboutAHandlerExecution<T>(Action<HandlerExecutionEventArgs> onHandlerExecutionStarted, Action<HandlerExecutionEventArgs> onHandlerExecutionEnded = null) 
+        public static void SetHandlerExecutionNotification<T>(Action<HandlerExecutionEventArgs> onHandlerExecutionStarted, Action<HandlerExecutionEventArgs> onHandlerExecutionEnded = null) 
         {
             var typeToSet = typeof (T);
 
