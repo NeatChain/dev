@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NeatChainFx
 {
-    public abstract class NetChainHandler<TArgument>
+    public abstract class NeatChainHandler<TArgument>
     {
 
         private List<dynamic> _Execute(TArgument arg,List<TArgument> args)
@@ -62,7 +62,7 @@ namespace NeatChainFx
                 args.ForEach(
                     arg =>
                     {
-                        SetValidations(new ChainCondition(), new List<Action<TArgument, int>>())
+                        SetValidations(new NeatChainCondition(), new List<Action<TArgument, int>>())
                             .ForEach(x => x.Invoke(arg, index));
                         index++;
                     });
@@ -114,9 +114,9 @@ namespace NeatChainFx
         
 
 
-        protected NetChainHandler<TArgument> NextReceiver { set; get; }
+        protected NeatChainHandler<TArgument> NextReceiver { set; get; }
 
-        internal void SetNextReceiver(NetChainHandler<TArgument> nextReceiver)
+        internal void SetNextReceiver(NeatChainHandler<TArgument> nextReceiver)
         {
             NextReceiver = nextReceiver;
         }
@@ -127,7 +127,7 @@ namespace NeatChainFx
         /// <param name="chainCondition"></param>
         /// <param name="validations"></param>
         /// <returns></returns>
-        protected abstract List<Action<TArgument, int>> SetValidations(ChainCondition chainCondition, List<Action<TArgument, int>> validations);
+        protected abstract List<Action<TArgument, int>> SetValidations(NeatChainCondition chainCondition, List<Action<TArgument, int>> validations);
 
      
         protected long CallPosition { set; get; }
@@ -150,10 +150,16 @@ namespace NeatChainFx
                 responses = Execute(args);
                 return;
             }
+
+            if (NextReceiver == null)
+            {
+                responses=new List<dynamic>();
+                return;
+            }
             NextReceiver.ExecuteOnlyFirstMatchingHandlerInChain(out responses, args);
         }
 
-        internal void ExecuteAllMatchingHandlerInChain(out  List<dynamic> response, List<TArgument> args)
+        internal void ExecuteAllMatchingHandlerInChain(out  List<dynamic> responses, List<TArgument> args)
         {
             if (HasResponsibilityToExecute( args))
             {
@@ -166,8 +172,13 @@ namespace NeatChainFx
 
                 LastSetOfResponses.AddRange(Execute(args));
             }
+            if (NextReceiver == null)
+            {
+                responses = new List<dynamic>();
+                return;
+            }
             NextReceiver.LastSetOfResponses = LastSetOfResponses;
-            NextReceiver.ExecuteOnlyFirstMatchingHandlerInChain(out response, args);
+            NextReceiver.ExecuteOnlyFirstMatchingHandlerInChain(out responses, args);
         }
     }
 }

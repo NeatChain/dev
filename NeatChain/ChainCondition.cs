@@ -1,6 +1,6 @@
 ﻿namespace NeatChainFx
 {
-    public class ChainCondition
+    public class NeatChainCondition
     {
         public Requires<T> Requires<T>(T arg)
         {

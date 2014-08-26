@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NeatChainFx
 {
-    public abstract class InjectExecuteAndReturnType<T>
+    public abstract class InterceptionReturnType<T>
     {
         
     }

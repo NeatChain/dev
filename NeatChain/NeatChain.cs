@@ -5,18 +5,22 @@ namespace NeatChainFx
 {
     public static class NeatChain
     {
+
+
+
+
         /// <summary>
         /// Warning!! Only enable this in unit test
         /// </summary>
-        public static bool EnableFakeExecutions { set; get; }
+        internal static bool InterceptCodeEnabled { set; get; }
 
         private static readonly List<InjectExecuteMaping> InjectExecuteFakeMapings = new List<InjectExecuteMaping>();
 
-        private static void SetInjectExecuteFake<TS, T>(Func<T> splitExecutBody)
-            where TS : InjectExecuteAndReturnType<T>
-            where T : new()
+        private static void SetInjectExecuteFake<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody)
+            where TInterceptionLabelAt : InterceptionReturnType<TInterceptionReturnType>
+            where TInterceptionReturnType : new()
         {
-            var typeFullName = typeof(TS).FullName;
+            var typeFullName = typeof(TInterceptionLabelAt).FullName;
 
             var exists = false;
             InjectExecuteFakeMapings.ForEach((x) =>
@@ -37,46 +41,59 @@ namespace NeatChainFx
             });
         }
 
-        public static class SetFake
+        public static class Intercept
         {
-            public static void InjectExecute<TS>(Action splitExecutBody)
-                       where TS : InjectExecuteAndReturnType<bool>
+            public static void CodeAt<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody)
+                where TInterceptionLabelAt : InterceptionReturnType<TInterceptionReturnType>
+                where TInterceptionReturnType : new()
             {
-                InjectExecute<TS, bool>(() =>
-                {
-                    splitExecutBody.Invoke();
-                    return true;
-                });
+
+                    if (typeof(TInterceptionLabelAt).FullName == typeof(InterceptionReturnType<TInterceptionReturnType>).FullName)
+                    {
+                        throw new Exception("You cannot use 'InjectExecuteLabel' class as an InjectExecute Label. Please create and use only instances of it");
+                    }
+                    SetInjectExecuteFake<TInterceptionLabelAt, TInterceptionReturnType>(splitExecutBody);
+         
+
             }
 
-            public static void InjectExecute<TS, T>(Func<T> splitExecutBody)
-                where TS : InjectExecuteAndReturnType<T>
-                where T : new()
+            public static void CodeAt<TInterceptionLabelAt>(Action splitExecutBody)
+                where TInterceptionLabelAt : InterceptionReturnType<object>
             {
-                if (typeof(TS).FullName == typeof(InjectExecuteAndReturnType<T>).FullName)
-                {
-                    throw new Exception("You cannot use 'InjectExecuteLabel' class as an InjectExecute Label. Please create and use only instances of it");
-                }
-                SetInjectExecuteFake<TS, T>(splitExecutBody);
+
+                CodeAt<TInterceptionLabelAt, object>(() =>
+                    {
+                        splitExecutBody.Invoke();
+                        return true;
+                    });
+           
             }
+            public static void RemoveCodeAt<TInterceptionLabelAt>()
+                where TInterceptionLabelAt : InterceptionReturnType<object>
+            {
+
+                CodeAt<TInterceptionLabelAt>(() =>{});
+
+            }
+           
         }
 
-        public static void InjectExecute<TS>(Action splitExecutBody) where TS : InjectExecuteAndReturnType<bool>
+        public static void CodeAt<TInterceptionLabelAt>(Action splitExecutBody) where TInterceptionLabelAt : InterceptionReturnType<object>
         {
-            InjectExecute<TS, bool>(() =>
+            CodeAt<TInterceptionLabelAt, object>(() =>
             {
                 splitExecutBody.Invoke();
                 return true;
             });
         }
 
-        public static T InjectExecute<TS, T>(Func<T> splitExecutBody) where TS : InjectExecuteAndReturnType<T>
+        public static TInterceptionReturnType CodeAt<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody) where TInterceptionLabelAt : InterceptionReturnType<TInterceptionReturnType>
         {
-            if (!EnableFakeExecutions)
+            if (!InterceptCodeEnabled)
             {
                 return splitExecutBody.Invoke();
             }
-            var TypeOfLabel = typeof(TS).FullName;
+            var TypeOfLabel = typeof(TInterceptionLabelAt).FullName;
 
             var availableFakeExecution = InjectExecuteFakeMapings.Find(x => x.AUniqueInjectExecuteLabelFullName == TypeOfLabel);
 
@@ -88,14 +105,14 @@ namespace NeatChainFx
                 object result;
                 try
                 {
-                    result = ((Func<T>)availableFakeExecution.SplitExecutBody).Invoke();
+                    result = ((Func<TInterceptionReturnType>)availableFakeExecution.SplitExecutBody).Invoke();
                 }
                 catch (Exception e)
                 {
                     throw new Exception("An exception occured while trying to run fake execution provided for " + TypeOfLabel + ". Please see inner exception for details", e);
                 }
 
-                return (T)result;
+                return (TInterceptionReturnType)result;
             }
             catch (Exception e)
             {
@@ -107,9 +124,9 @@ namespace NeatChainFx
 
         private static readonly List<HanlderExecutionNotification> HanlderExecutionNotifications = new List<HanlderExecutionNotification>();
 
-        public static void SetHandlerExecutionNotification<T>(Action<HandlerExecutionEventArgs> onHandlerExecutionStarted, Action<HandlerExecutionEventArgs> onHandlerExecutionEnded = null)
+        public static void SetHandlerExecutionNotification<TInterceptionReturnType>(Action<HandlerExecutionEventArgs> onHandlerExecutionStarted, Action<HandlerExecutionEventArgs> onHandlerExecutionEnded = null)
         {
-            var typeToSet = typeof(T);
+            var typeToSet = typeof(TInterceptionReturnType);
 
             HanlderExecutionNotifications.Add(new HanlderExecutionNotification()
             {
@@ -177,12 +194,12 @@ namespace NeatChainFx
             public static ChainFactory<TArgument> ToBeHandledBy = new ChainFactory<TArgument>();
         }
 
-        public static ChainFactory<TArgument>._Then SetUp<TArgument>(ExecutionStrategy executionStrategy, params NetChainHandler<TArgument>[] receivers)
+        public static ChainFactory<TArgument>._Then SetUp<TArgument>(ExecutionStrategy executionStrategy, params NeatChainHandler<TArgument>[] receivers)
         {
             return ThatAcceptsArgumentType<TArgument>.ToBeHandledBy.TheseHandlers(executionStrategy, receivers);
         }
 
-        public static ChainFactory<TArgument>._Then SetUp<TArgument>(params NetChainHandler<TArgument>[] receivers)
+        public static ChainFactory<TArgument>._Then SetUp<TArgument>(params NeatChainHandler<TArgument>[] receivers)
         {
             return SetUp(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
         }
@@ -195,7 +212,7 @@ namespace NeatChainFx
         /// <param name="arg">actual argument of type TArgument</param>
         /// <param name="receivers">The handlers</param>
         /// <returns></returns>
-        public static _Execute<TArgument> SetUpWithArgument<TArgument>(TArgument arg, params NetChainHandler<TArgument>[] receivers)
+        public static _Execute<TArgument> SetUpWithArgument<TArgument>(TArgument arg, params NeatChainHandler<TArgument>[] receivers)
         {
             return new _Execute<TArgument>(arg, receivers);
         }
@@ -204,9 +221,9 @@ namespace NeatChainFx
         {
             private TArgument Arg { set; get; }
 
-            private NetChainHandler<TArgument>[] Receivers { set; get; }
+            private NeatChainHandler<TArgument>[] Receivers { set; get; }
 
-            public _Execute(TArgument arg, params NetChainHandler<TArgument>[] receivers)
+            public _Execute(TArgument arg, params NeatChainHandler<TArgument>[] receivers)
             {
                 Arg = arg;
                 Receivers = receivers;

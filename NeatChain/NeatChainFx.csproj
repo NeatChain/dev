@@ -40,8 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DecoupleExecuteMaping.cs" />
+    <Compile Include="GlobalLabel.cs" />
     <Compile Include="HandlerExecutionEventArgs.cs" />
     <Compile Include="HanlderExecutionNotification.cs" />
+    <Compile Include="NeatChainSafeInterception.cs" />
     <Compile Include="NetChainHandler.cs" />
     <Compile Include="ChainFactory.cs" />
     <Compile Include="NeatChain.cs" />

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace NeatChainFx.Tests.TestHandlers
 {
-    public class Number3Handler : NetChainHandler<int>
+    public class Number3Handler : NeatChainHandler<int>
     {
-        protected override List<Action<int, int>> SetValidations(ChainCondition chainCondition, List<Action<int, int>> validations)
+        protected override List<Action<int, int>> SetValidations(NeatChainCondition chainCondition, List<Action<int, int>> validations)
         {
             validations.Add((arg, index) => chainCondition.Requires(arg).IsNotNull());
             validations.Add((arg, index) => chainCondition.Requires(arg).IsAn<int>());

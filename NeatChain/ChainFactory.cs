@@ -11,18 +11,18 @@ namespace NeatChainFx
             Init();
         }
 
-        private List<NetChainHandler<TArgument>> ExistingReceivers { set; get; }
+        private List<NeatChainHandler<TArgument>> ExistingReceivers { set; get; }
 
         private void Init()
         {
-            ExistingReceivers = new List<NetChainHandler<TArgument>>
+            ExistingReceivers = new List<NeatChainHandler<TArgument>>
             {
                 new DefaultReceiver<TArgument>()
             };
         }
 
         private _Then CreateChainReceivers(
-            params NetChainHandler<TArgument>[] receivers)
+            params NeatChainHandler<TArgument>[] receivers)
         {
             Init();
             receivers.ToList().ForEach(x =>
@@ -37,7 +37,7 @@ namespace NeatChainFx
         public ExecutionStrategy ExecutionStrategy { set; get; }
 
         public _Then TheseHandlers( ExecutionStrategy executionStrategy,
-            params NetChainHandler<TArgument>[] receivers)
+            params NeatChainHandler<TArgument>[] receivers)
         {
             ExecutionStrategy = executionStrategy;
             return CreateChainReceivers(receivers);
@@ -45,14 +45,14 @@ namespace NeatChainFx
 
 
         public _Then AtMostOneOfTheseHandlers(
-            params NetChainHandler<TArgument>[] receivers)
+            params NeatChainHandler<TArgument>[] receivers)
         {
             
             return TheseHandlers(ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,receivers);
         }
 
         public _Then AtMostAllOfTheseHandlers(
-           params NetChainHandler<TArgument>[] receivers)
+           params NeatChainHandler<TArgument>[] receivers)
         {
             return TheseHandlers(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
         }
@@ -124,7 +124,8 @@ namespace NeatChainFx
                         if (dynamicResponseToExpectedTypeCaster == null)
                         {
                             var list = response;
-                            _response.ForEach(x => list.Add((TResponse)x));
+                            
+                            _response.ForEach(x => list.Add((TResponse) x));
                         }
 
                         else

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace NeatChainFx.Tests.TestHandlers
 {
-    public class Number2Handler : NetChainHandler<int>
+    public class Number2Handler : NeatChainHandler<int>
     {
-        protected override List<Action<int, int>> SetValidations(ChainCondition chainCondition, List<Action<int, int>> validations)
+        protected override List<Action<int, int>> SetValidations(NeatChainCondition chainCondition, List<Action<int, int>> validations)
         {
             validations.Add((arg, index) => chainCondition.Requires(arg).IsNotNull());
             validations.Add((arg, index) => chainCondition.Requires(arg).IsAn<int>());
@@ -19,7 +19,12 @@ namespace NeatChainFx.Tests.TestHandlers
 
         protected override List<dynamic> Execute(int arg, List<int> args)
         {
-            return new List<dynamic> {arg*100};
+            dynamic data=0;
+            NeatChain.CodeAt<GlobalLabel>(() =>
+            {
+                data = arg*100;
+            });
+            return new List<dynamic> { data };
         }
     }
 }

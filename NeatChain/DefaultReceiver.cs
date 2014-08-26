@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace NeatChainFx{
-    public class DefaultReceiver<TArgument> : NetChainHandler<TArgument>
+    public class DefaultReceiver<TArgument> : NeatChainHandler<TArgument>
     {
-        protected override List<Action<TArgument, int>> SetValidations(ChainCondition chainCondition, List<Action<TArgument, int>> validations)
+        protected override List<Action<TArgument, int>> SetValidations(NeatChainCondition chainCondition, List<Action<TArgument, int>> validations)
         {
            return validations;
         }

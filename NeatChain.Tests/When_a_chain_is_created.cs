@@ -83,35 +83,53 @@ namespace NeatChainFx.Tests
             Assert.AreEqual(100, result.First());
         }
 
-
         /// <summary>
         ///     You can make things as 'one liner' as this
         /// </summary>
         [TestMethod]
-        public void use_of_fakes()
+        public void use_of_fakes1()
         {
-            NeatChain.EnableFakeExecutions = true;
-            var result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
+            using (new NeatChainCodeInterception())
+            {
+                var result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
 
-            Assert.IsTrue(result.Count == 1);
-            // if no fakes are set up, then original values are used
-            Assert.AreEqual(100, result.First());
+                Assert.IsTrue(result.Count == 1);
+                // if no fakes are set up, then original values are used
+                Assert.AreEqual(100, result.First());
 
-            // if fakes are set up and EnableFakeExecutions is true, fakes are used
-            NeatChain.SetFake.InjectExecute<InjectExecuteLabelTest, int>(() => 5000);
+                // if fakes are set up and EnableFakeExecutions is true, fakes are used
+                NeatChain.Intercept.CodeAt<SampleInterceptionLabel, int>(() => 5000);
 
-            result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
-            Assert.AreEqual(5000, result.First());
+                result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
+                Assert.AreEqual(5000, result.First());
+            }
         }
+        [TestMethod]
+        public void use_of_fakes2_strongly_typed_code_removal_without_conditional_compilation()
+        {
+            using (new NeatChainCodeInterception())
+            {
+                var result = NeatChain.SetUpWithArgument(2, new Number2Handler()).Execute<int>();
 
+                Assert.IsTrue(result.Count == 1);
+                // if no fakes are set up, then original values are used
+                Assert.AreEqual(200, result.First());
+
+                // if fakes are set up and EnableFakeExecutions is true, fakes are used
+                // it will execute as though the code was never written
+                //GlobalLabel is an internally defined label
+                NeatChain.Intercept.RemoveCodeAt<GlobalLabel>();
+
+                result = NeatChain.SetUpWithArgument(2, new Number2Handler()).Execute<int>();
+                Assert.AreEqual(0, result.First());
+            }
+        }
         /// <summary>
         ///     Or you can make things as complicated as this
         /// </summary>
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed5()
         {
-           
-
             // you can listen for all events
             NeatChain.OnHandlerExecutionStarted += NeatChain_OnHandlerExecutionStarted;
             NeatChain.OnHandlerExecutionEnded += NeatChain_OnHandlerExecutionEnded;
@@ -198,14 +216,12 @@ namespace NeatChainFx.Tests
             Assert.IsTrue(timesNumber3HandlerStarted == 1);
         }
 
-        void NeatChain_OnHandlerExecutionEnded(object sender, HandlerExecutionEventArgs e)
+        private void NeatChain_OnHandlerExecutionEnded(object sender, HandlerExecutionEventArgs e)
         {
-            
         }
 
-        void NeatChain_OnHandlerExecutionStarted(object sender, HandlerExecutionEventArgs e)
+        private void NeatChain_OnHandlerExecutionStarted(object sender, HandlerExecutionEventArgs e)
         {
-            
         }
     }
 }
