@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NeatChainFx
 {
-    public class NeatChainCodeInterception:IDisposable
+    public class CodeInjection:IDisposable
     {
 
-        public NeatChainCodeInterception()
+        public CodeInjection(bool injectionOverWritingEnabled=true)
         {
-            NeatChain.InterceptCodeEnabled = true;
+            NeatChain.EnableInjectionOverWrite = injectionOverWritingEnabled;
+            NeatChain.EnableCodeInjection = true;
         }
 
         public void Dispose()
         {
-            NeatChain.InterceptCodeEnabled = false;
+            NeatChain.InjectExecuteFakeMapings=new List<InjectExecuteMaping>();
+            NeatChain.EnableInjectionOverWrite = true;
+            NeatChain.EnableCodeInjection = false;
         }
     }
 }

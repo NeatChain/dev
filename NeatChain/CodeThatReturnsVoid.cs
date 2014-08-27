@@ -5,11 +5,10 @@ using System.Text;
 
 namespace NeatChainFx
 {
-    public abstract class InterceptionReturnType<T>
+    public abstract class CodeThatReturnsVoid:CodeThatReturns<dynamic>
     {
-        
-    }
 
+    }
   
 
 

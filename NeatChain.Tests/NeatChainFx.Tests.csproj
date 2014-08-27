@@ -54,10 +54,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Execution.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleTestCode.cs" />
     <Compile Include="TestHandlers\Number1Handler.cs" />
     <Compile Include="TestHandlers\Number2Handler.cs" />
     <Compile Include="TestHandlers\Number3Handler.cs" />
+    <Compile Include="using_the_new_where_syntax.cs" />
     <Compile Include="when_Number1Handler_is_run_outside_the_usual_pileline.cs" />
     <Compile Include="When_a_chain_is_created.cs" />
   </ItemGroup>

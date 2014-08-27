@@ -37,8 +37,8 @@ namespace NeatChainFx.Tests
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed2()
         {
             var testArg = new List<int> { 1, 2, 3 };
-            var chainSetUp = NeatChain.SetUp(
-                ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
+            var chainSetUp = NeatChain.Build(
+                ExecutionStrategy.NotMoreThanOneHandler,
                 new Number1Handler(),
                 new Number2Handler(),
                 new Number3Handler());
@@ -51,25 +51,7 @@ namespace NeatChainFx.Tests
             });
         }
 
-        /// <summary>
-        ///     You can make things as easy as this
-        /// </summary>
-        [TestMethod]
-        public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed3()
-        {
-            var chainSetUp = NeatChain.SetUp(new Number1Handler());
-
-            List<int> result;
-            Assert.IsTrue(chainSetUp.ExecutionChainSucceeded(out result, 1));
-            Assert.IsTrue(result.Count == 1);
-            Assert.AreEqual(100, result.First());
-
-            //though a simple case , there are benefits, such as
-            //1. defensive A: you are provided with a neat opinionated pattern of input argument validation
-            //2. defensive B: you are provided with the capability to determine if it is the responsibility of the execute method
-            //    to process the argument, if not, argument will not even be validated and the execute method will not be called.
-            //3. method execution still passes through the same pipeline as chain execution, thus same neat exception handling
-        }
+      
 
         /// <summary>
         ///     You can make things as 'one liner' as this
@@ -77,7 +59,7 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void it_should_execute_only_the_member_of_the_chain_that_can_handle_the_argument_passed4()
         {
-            var result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
+            var result = NeatChain.Build(1, new Number1Handler()).Execute<int>();
 
             Assert.IsTrue(result.Count == 1);
             Assert.AreEqual(100, result.First());
@@ -89,27 +71,27 @@ namespace NeatChainFx.Tests
         [TestMethod]
         public void use_of_fakes1()
         {
-            using (new NeatChainCodeInterception())
+            using (new CodeInjection())
             {
-                var result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
+                var result = NeatChain.Build(1, new Number1Handler()).Execute<int>();
 
                 Assert.IsTrue(result.Count == 1);
                 // if no fakes are set up, then original values are used
                 Assert.AreEqual(100, result.First());
 
                 // if fakes are set up and EnableFakeExecutions is true, fakes are used
-                NeatChain.Intercept.CodeAt<SampleInterceptionLabel, int>(() => 5000);
+                NeatChain.Inject.CodeAt<SampleTestCode, int>(() => 5000);
 
-                result = NeatChain.SetUpWithArgument(1, new Number1Handler()).Execute<int>();
+                result = NeatChain.Build(1, new Number1Handler()).Execute<int>();
                 Assert.AreEqual(5000, result.First());
             }
         }
         [TestMethod]
         public void use_of_fakes2_strongly_typed_code_removal_without_conditional_compilation()
         {
-            using (new NeatChainCodeInterception())
+            using (new CodeInjection())
             {
-                var result = NeatChain.SetUpWithArgument(2, new Number2Handler()).Execute<int>();
+                var result = NeatChain.Build(2, new Number2Handler()).Execute<int>();
 
                 Assert.IsTrue(result.Count == 1);
                 // if no fakes are set up, then original values are used
@@ -118,9 +100,9 @@ namespace NeatChainFx.Tests
                 // if fakes are set up and EnableFakeExecutions is true, fakes are used
                 // it will execute as though the code was never written
                 //GlobalLabel is an internally defined label
-                NeatChain.Intercept.RemoveCodeAt<GlobalLabel>();
+                NeatChain.Inject.EmptyCodeAt<DefaultCodeThatReturnsVoid>();
 
-                result = NeatChain.SetUpWithArgument(2, new Number2Handler()).Execute<int>();
+                result = NeatChain.Build(2, new Number2Handler()).Execute<int>();
                 Assert.AreEqual(0, result.First());
             }
         }
@@ -170,8 +152,8 @@ namespace NeatChainFx.Tests
             var exceptionWasRaised = false;
             var converterWasCalled = false;
             var testArg = new List<int> { 1, 2, 3 };
-            var chainSetUp = NeatChain.SetUp(
-                ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,
+            var chainSetUp = NeatChain.Build(
+                ExecutionStrategy.NotMoreThanOneHandler,
                 new Number1Handler(),
                 new Number2Handler(),
                 new Number3Handler());

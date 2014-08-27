@@ -47,14 +47,14 @@ namespace NeatChainFx
         public _Then AtMostOneOfTheseHandlers(
             params NeatChainHandler<TArgument>[] receivers)
         {
-            
-            return TheseHandlers(ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted,receivers);
+
+            return TheseHandlers(ExecutionStrategy.NotMoreThanOneHandler, receivers);
         }
 
         public _Then AtMostAllOfTheseHandlers(
            params NeatChainHandler<TArgument>[] receivers)
         {
-            return TheseHandlers(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
+            return TheseHandlers(ExecutionStrategy.AllPossibleHandlers, receivers);
         }
 
         public class _Then
@@ -105,11 +105,11 @@ namespace NeatChainFx
 
                     switch (Parent.ExecutionStrategy)
                     {
-                        case ExecutionStrategy.OnlyTheFirsHandlerFoundWhoHasTheResponsibilityIsExecuted:
+                        case ExecutionStrategy.NotMoreThanOneHandler:
                             Parent.ExistingReceivers.First().ExecuteOnlyFirstMatchingHandlerInChain(out _response, arg);
                             break;
 
-                        case ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted:
+                        case ExecutionStrategy.AllPossibleHandlers:
                             Parent.ExistingReceivers.First().ExecuteAllMatchingHandlerInChain(out _response, arg);
                             break;
 

@@ -5,8 +5,6 @@ using System.Linq;
 
 namespace NeatChainFx.Tests
 {
-    public class SampleInterceptionLabel : InterceptionReturnType<int> { }
-
     [TestClass]
     public class when_Number1Handler_is_run_outside_the_usual_pileline
     {
@@ -48,10 +46,10 @@ namespace NeatChainFx.Tests
             dynamic result;
             var number1Handler = new Number1Handler();
             // this is to ensure interception is not accidentally turned on
-            using (new NeatChainCodeInterception())
+            using (new CodeInjection())
             {
                 //look for anywhere the label 'InjectExecuteLabelTest' is and fake out the execution
-                NeatChain.Intercept.CodeAt<SampleInterceptionLabel, int>(() => 5000);
+                NeatChain.Inject.CodeAt<SampleTestCode, int>(() => 5000);
                 var inputIsValid = true;
 
                 number1Handler.ValidateInputArguments(1, (message, e) => { inputIsValid = false; });
@@ -62,7 +60,7 @@ namespace NeatChainFx.Tests
                 Assert.AreEqual(5000, result);
 
                 // we can overwrite fake
-                NeatChain.Intercept.CodeAt<SampleInterceptionLabel, int>(() => 888);
+                NeatChain.Inject.CodeAt<SampleTestCode, int>(() => 888);
 
                 result = number1Handler.Execute(1).FirstOrDefault();
                 // so instead of 5000, the result is 888
@@ -73,9 +71,12 @@ namespace NeatChainFx.Tests
             // so instead of 888, the result is back to 100
             Assert.AreEqual(100, result);
 
-            // and outside the safe block, code interception wont work
+            // and outside the safe block, code inject will throw exception wont work
 
-            NeatChain.Intercept.CodeAt<SampleInterceptionLabel, int>(() => 888);
+
+
+            Assert.IsTrue(Execution.ThrewException(() => NeatChain.Inject.CodeAt<SampleTestCode, int>(() => 888)));
+
 
             result = number1Handler.Execute(1).FirstOrDefault();
             // so instead of 5000, the result is 888

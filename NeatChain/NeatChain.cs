@@ -6,33 +6,52 @@ namespace NeatChainFx
     public static class NeatChain
     {
 
+        
+        public static T @where<T>(Func<T> body)
+        {
+          return   NeatChain.CodeAt<DefaultCodeThatReturns, dynamic>(() =>(dynamic) body.Invoke());
+        }
 
+        public static void @where(Action body)
+        {
+            NeatChain.CodeAt<DefaultCodeThatReturns>(body.Invoke);
+        }
 
 
         /// <summary>
         /// Warning!! Only enable this in unit test
         /// </summary>
-        internal static bool InterceptCodeEnabled { set; get; }
-
-        private static readonly List<InjectExecuteMaping> InjectExecuteFakeMapings = new List<InjectExecuteMaping>();
+        internal static bool EnableCodeInjection { set; get; }
+        internal static bool EnableInjectionOverWrite { set; get; }
+        internal static  List<InjectExecuteMaping> InjectExecuteFakeMapings = new List<InjectExecuteMaping>();
 
         private static void SetInjectExecuteFake<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody)
-            where TInterceptionLabelAt : InterceptionReturnType<TInterceptionReturnType>
+            where TInterceptionLabelAt : CodeThatReturns<TInterceptionReturnType>
             where TInterceptionReturnType : new()
         {
             var typeFullName = typeof(TInterceptionLabelAt).FullName;
 
-            var exists = false;
-            InjectExecuteFakeMapings.ForEach((x) =>
+            var exists =  InjectExecuteFakeMapings.Exists((x) =>x.AUniqueInjectExecuteLabelFullName == typeFullName);
+           
+            if (exists)
             {
-                if (x.AUniqueInjectExecuteLabelFullName == typeFullName)
+                if (!EnableInjectionOverWrite)
                 {
-                    x.SplitExecutBody = splitExecutBody;
-                    exists = true;
+                        return;
                 }
+                var index = 0;
+                InjectExecuteFakeMapings.ForEach((x) =>
+                {
+                    if (x.AUniqueInjectExecuteLabelFullName == typeFullName)
+                    {
+
+                        InjectExecuteFakeMapings[index].SplitExecutBody = splitExecutBody;
+                    }
+                    index++;
+                });
+                return;
             }
-        );
-            if (exists) return;
+          
             InjectExecuteFakeMapings.Add(new InjectExecuteMaping()
             {
                 SplitExecutBody = splitExecutBody,
@@ -41,14 +60,22 @@ namespace NeatChainFx
             });
         }
 
-        public static class Intercept
+        public static class Inject
         {
+            private static readonly Exception IncorrectUseOfCodeInjectionException = new  Exception("Please Inject Code only within the  using (new CodeInjection()) block");
+
             public static void CodeAt<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody)
-                where TInterceptionLabelAt : InterceptionReturnType<TInterceptionReturnType>
+                where TInterceptionLabelAt : CodeThatReturns<TInterceptionReturnType>
                 where TInterceptionReturnType : new()
             {
+                if (!NeatChain.EnableCodeInjection)
+                {
+                    throw IncorrectUseOfCodeInjectionException;
+                }
 
-                    if (typeof(TInterceptionLabelAt).FullName == typeof(InterceptionReturnType<TInterceptionReturnType>).FullName)
+               
+
+                    if (typeof(TInterceptionLabelAt).FullName == typeof(CodeThatReturns<TInterceptionReturnType>).FullName)
                     {
                         throw new Exception("You cannot use 'InjectExecuteLabel' class as an InjectExecute Label. Please create and use only instances of it");
                     }
@@ -58,8 +85,13 @@ namespace NeatChainFx
             }
 
             public static void CodeAt<TInterceptionLabelAt>(Action splitExecutBody)
-                where TInterceptionLabelAt : InterceptionReturnType<object>
+                where TInterceptionLabelAt : CodeThatReturns<object>
             {
+
+                if (!NeatChain.EnableCodeInjection)
+                {
+                    throw    IncorrectUseOfCodeInjectionException;
+                }
 
                 CodeAt<TInterceptionLabelAt, object>(() =>
                     {
@@ -68,17 +100,53 @@ namespace NeatChainFx
                     });
            
             }
-            public static void RemoveCodeAt<TInterceptionLabelAt>()
-                where TInterceptionLabelAt : InterceptionReturnType<object>
+            public static void EmptyCodeAt<TInterceptionLabelAt>()
+                where TInterceptionLabelAt : CodeThatReturns<object>
             {
+
+
+                if (!NeatChain.EnableCodeInjection)
+                {
+                    throw IncorrectUseOfCodeInjectionException;
+                }
+
 
                 CodeAt<TInterceptionLabelAt>(() =>{});
 
             }
+
+
+
+
+           
+
+            public static void @where<T>(Func<T> body)
+            {
+                CodeAt<DefaultCodeThatReturns,object>(() => body.Invoke());
+            }
+
+            public static void @where(Action body)
+            {
+                
+                CodeAt<DefaultCodeThatReturnsVoid, object>(() =>
+                {
+                    body.Invoke();
+                   
+                    return 0;
+                });
+            }
+
+
+
+
+
+
+
+
            
         }
 
-        public static void CodeAt<TInterceptionLabelAt>(Action splitExecutBody) where TInterceptionLabelAt : InterceptionReturnType<object>
+        public static void CodeAt<TInterceptionLabelAt>(Action splitExecutBody) where TInterceptionLabelAt : CodeThatReturns<object>
         {
             CodeAt<TInterceptionLabelAt, object>(() =>
             {
@@ -87,9 +155,9 @@ namespace NeatChainFx
             });
         }
 
-        public static TInterceptionReturnType CodeAt<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody) where TInterceptionLabelAt : InterceptionReturnType<TInterceptionReturnType>
+        public static TInterceptionReturnType CodeAt<TInterceptionLabelAt, TInterceptionReturnType>(Func<TInterceptionReturnType> splitExecutBody) where TInterceptionLabelAt : CodeThatReturns<TInterceptionReturnType>
         {
-            if (!InterceptCodeEnabled)
+            if (!EnableCodeInjection)
             {
                 return splitExecutBody.Invoke();
             }
@@ -194,15 +262,15 @@ namespace NeatChainFx
             public static ChainFactory<TArgument> ToBeHandledBy = new ChainFactory<TArgument>();
         }
 
-        public static ChainFactory<TArgument>._Then SetUp<TArgument>(ExecutionStrategy executionStrategy, params NeatChainHandler<TArgument>[] receivers)
+        public static ChainFactory<TArgument>._Then Build<TArgument>(ExecutionStrategy executionStrategy, params NeatChainHandler<TArgument>[] receivers)
         {
             return ThatAcceptsArgumentType<TArgument>.ToBeHandledBy.TheseHandlers(executionStrategy, receivers);
         }
 
-        public static ChainFactory<TArgument>._Then SetUp<TArgument>(params NeatChainHandler<TArgument>[] receivers)
-        {
-            return SetUp(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, receivers);
-        }
+        //public static ChainFactory<TArgument>._Then SetUp<TArgument>(params NeatChainHandler<TArgument>[] receivers)
+        //{
+        //    return Build<TArgument>(ExecutionStrategy.AllPossibleHandlers, receivers);
+        //}
 
         /// <summary>
         ///
@@ -212,7 +280,7 @@ namespace NeatChainFx
         /// <param name="arg">actual argument of type TArgument</param>
         /// <param name="receivers">The handlers</param>
         /// <returns></returns>
-        public static _Execute<TArgument> SetUpWithArgument<TArgument>(TArgument arg, params NeatChainHandler<TArgument>[] receivers)
+        public static _Execute<TArgument> Build<TArgument>(TArgument arg, params NeatChainHandler<TArgument>[] receivers)
         {
             return new _Execute<TArgument>(arg, receivers);
         }
@@ -229,9 +297,9 @@ namespace NeatChainFx
                 Receivers = receivers;
             }
 
-            public List<TResult> Execute<TResult>()
+            public List<TResult> Execute<TResult>(ExecutionStrategy? executionStrategy=null)
             {
-                var chainSetUp = SetUp(ExecutionStrategy.AllHandlersFoundThatHaveTheResponsibilitiesAreExecuted, Receivers);
+                var chainSetUp = Build(executionStrategy??ExecutionStrategy.AllPossibleHandlers, Receivers);
                 List<TResult> result;
                 chainSetUp.ExecutionChainSucceeded(out result, Arg);
                 return result;

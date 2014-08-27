@@ -22,7 +22,7 @@ namespace NeatChainFx.Tests.TestHandlers
         {
             return new List<dynamic>
             {
-                NeatChain.CodeAt<SampleInterceptionLabel, int>(() => arg * 100)
+                NeatChain.CodeAt<SampleTestCode, int>(() => arg * 100)
             };
         }
     }

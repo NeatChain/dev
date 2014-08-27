@@ -20,11 +20,13 @@ namespace NeatChainFx.Tests.TestHandlers
         protected override List<dynamic> Execute(int arg, List<int> args)
         {
             dynamic data=0;
-            NeatChain.CodeAt<GlobalLabel>(() =>
+
+
+            NeatChain.CodeAt<DefaultCodeThatReturnsVoid>(() =>
             {
                 data = arg*100;
             });
-            return new List<dynamic> { data };
+            return new List<dynamic>(){ data };
         }
     }
 }
